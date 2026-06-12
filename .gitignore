@@ -1,0 +1,44 @@
+# Data — never commit raw datasets or large derived files
+data/raw/
+data/processed/
+data/splits/
+*.png
+*.jpg
+*.jpeg
+*.dcm
+*.nii
+*.nii.gz
+!paper/figures/*.png
+
+# Experiment outputs
+experiments/runs/
+*.ckpt
+*.pth
+*.pt
+*.log
+wandb/
+mlruns/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
