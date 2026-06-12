@@ -2,6 +2,7 @@
 data/raw/
 data/processed/
 data/splits/
+data/_zips/
 *.png
 *.jpg
 *.jpeg
@@ -9,6 +10,15 @@ data/splits/
 *.nii
 *.nii.gz
 !paper/figures/*.png
+
+# Archives / large binaries
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.7z
+*.rar
 
 # Experiment outputs
 experiments/runs/
