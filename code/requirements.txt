@@ -1,0 +1,13 @@
+# Phase 1 — centralized TB classifier.
+# On Colab, torch/torchvision are preinstalled; install the rest.
+torch>=2.0
+torchvision>=0.15
+numpy
+pandas
+scikit-learn
+pillow
+pyyaml
+matplotlib
+grad-cam>=1.4
+fairlearn        # subgroup fairness metrics (Phase 3 onward)
+# flwr[simulation]   # uncomment for Phase 2 (Flower federated simulation)
