@@ -22,28 +22,29 @@ Paper-ready results for the centralized upper-bound baseline. Source run:
 
 ## Fairness — by sex
 
-| Group | n | AUC | Sensitivity |
-|-------|---|-----|-------------|
-| Male | 78 | 0.977 | 0.860 |
-| Female | 40 | 0.909 | 0.688 |
-| unknown | 2 | — | — |
-| **AUC gap** | | 0.068 | |
-| **Sensitivity gap** | | | 0.173 |
+| Group | n | AUC | Sensitivity | Specificity | Accuracy | F1 |
+|-------|---|-----|-------------|-------------|----------|----|
+| Male | 78 | 0.977 | 0.860 | 0.971 | 0.910 | 0.914 |
+| Female | 40 | 0.909 | 0.688 | 0.958 | 0.850 | 0.786 |
+| unknown | 2 | — | — | 1.000 | 1.000 | 0.000 |
+| **Gap (max−min, valid groups)** | | **0.068** | **0.173** | | | |
 
 ## Fairness — by age band
 
-| Group | n | AUC | Sensitivity |
-|-------|---|-----|-------------|
-| 45–60 | 17 | 1.000 | 1.000 |
-| 30–45 | 46 | 0.962 | 0.808 |
-| 0–30 | 44 | 0.950 | 0.824 |
-| 60+ | 13 | 0.850 | 0.625 |
-| **AUC gap** | | 0.150 | |
-| **Sensitivity gap** | | | 0.375 |
+| Group | n | AUC | Sensitivity | Specificity | Accuracy | F1 |
+|-------|---|-----|-------------|-------------|----------|----|
+| 45–60 | 17 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| 30–45 | 46 | 0.962 | 0.808 | 0.950 | 0.870 | 0.875 |
+| 0–30 | 44 | 0.950 | 0.824 | 0.963 | 0.909 | 0.875 |
+| 60+ | 13 | 0.850 | 0.625 | 1.000 | 0.769 | 0.769 |
+| **Gap (max−min)** | | **0.150** | **0.375** | | | |
 
 ## Notes
 - Headline disparities: female sensitivity 0.69 vs male 0.86; 60+ group worst (AUC 0.85,
   sensitivity 0.63). These motivate the fairness objective but are single-seed on small
   subgroups (F n=40, 60+ n=13) — directional only.
-- Per-subgroup specificity/F1/accuracy are in the full `test_metrics.json` in Drive (only
-  the per-group AUC/sensitivity were captured to this table).
+- Authoritative numbers are in `test_metrics.json` (committed alongside this file);
+  `history.json` holds the per-epoch training curve. The `best.pt` checkpoint and Grad-CAM
+  overlays remain Drive-only (git-ignored).
+- "unknown" sex group (n=2) has no TB-positive cases, so sensitivity/AUC are undefined and
+  it is excluded from gap calculations.
