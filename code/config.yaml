@@ -40,3 +40,8 @@ train:
 eval:
   # Sensitive attributes to report subgroup gaps for.
   sensitive_attrs: [sex, age_band]
+
+multiseed:
+  # run_multiseed.py runs these seeds and reports mean +/- 95% CI.
+  seeds: [0, 1, 2]
+  exp_name: ex001_centralized_3seed

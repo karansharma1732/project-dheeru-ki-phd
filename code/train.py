@@ -3,12 +3,16 @@
 This is the upper-bound baseline and, more importantly, it locks in the metric harness
 (metrics.evaluate) that every federated experiment in Phase 2+ will reuse.
 
+The training+eval for a single seed lives in ``run_once`` so the multi-seed runner
+(run_multiseed.py) can reuse it.
+
 Usage (Colab GPU):
     python train.py --config config.yaml
 """
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import random
 from pathlib import Path
@@ -21,6 +25,10 @@ import yaml
 from data_loader import build_dataloaders
 from metrics import evaluate, format_report
 from models import build_model
+
+
+def resolve_device(cfg: dict) -> str:
+    return cfg["device"] if (torch.cuda.is_available() or cfg["device"] == "cpu") else "cpu"
 
 
 def set_seed(seed: int) -> None:
@@ -51,15 +59,16 @@ def train_one_epoch(model, loader, criterion, optimizer, device) -> float:
     return total / len(loader.dataset)
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="config.yaml")
-    args = ap.parse_args()
-    cfg = yaml.safe_load(Path(args.config).read_text())
+def run_once(cfg: dict, seed: int, out_dir: Path, device: str) -> dict:
+    """Train + evaluate a single seed. Returns the test-metrics dict.
 
-    set_seed(cfg["seed"])
-    device = cfg["device"] if torch.cuda.is_available() or cfg["device"] == "cpu" else "cpu"
-    out_dir = Path(cfg["paths"]["out_dir"])
+    The data split is seed-dependent (data_loader reads cfg['seed']), so each seed
+    yields a fresh train/val/test partition — this captures split + init variance for CIs.
+    """
+    cfg = copy.deepcopy(cfg)
+    cfg["seed"] = seed
+    set_seed(seed)
+    out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     train_loader, val_loader, test_loader, class_w = build_dataloaders(cfg)
@@ -77,7 +86,7 @@ def main() -> None:
         val = evaluate(model, val_loader, device, attrs)
         val_auc = val["overall"]["auc"]
         history.append({"epoch": epoch, "train_loss": loss, "val": val})
-        print(f"epoch {epoch:02d} | train_loss={loss:.4f} | val_auc={val_auc:.3f}")
+        print(f"  [seed {seed}] epoch {epoch:02d} | train_loss={loss:.4f} | val_auc={val_auc:.3f}")
 
         if val_auc > best_auc:
             best_auc, patience = val_auc, 0
@@ -85,16 +94,26 @@ def main() -> None:
         else:
             patience += 1
             if patience >= cfg["train"]["early_stop_patience"]:
-                print(f"[early stop] no val AUC improvement for {patience} epochs")
+                print(f"  [seed {seed}] early stop — no val AUC gain for {patience} epochs")
                 break
 
-    # Final test with the best checkpoint.
     model.load_state_dict(torch.load(out_dir / "best.pt", map_location=device))
     test = evaluate(model, test_loader, device, attrs)
-    print("\n=== TEST ===\n" + format_report(test))
-
     (out_dir / "test_metrics.json").write_text(json.dumps(test, indent=2))
     (out_dir / "history.json").write_text(json.dumps(history, indent=2))
+    return test
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--config", default="config.yaml")
+    args = ap.parse_args()
+    cfg = yaml.safe_load(Path(args.config).read_text())
+
+    device = resolve_device(cfg)
+    out_dir = Path(cfg["paths"]["out_dir"])
+    test = run_once(cfg, cfg["seed"], out_dir, device)
+    print("\n=== TEST ===\n" + format_report(test))
     print(f"\n[done] artifacts -> {out_dir}")
 
 
