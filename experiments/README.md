@@ -15,7 +15,7 @@ experiments/
 
 | ID | Date | Method | Partition (α) | Datasets | Seeds | Key metric | Notes |
 |----|------|--------|---------------|----------|-------|-----------|-------|
-| _ex000_ | | centralized | — | SH+MC | 3 | AUC= | baseline template |
+| ex000 | 2026-06-13 | centralized DenseNet121 | — | SH+MC | 1 | test AUC=0.960 | acc=0.892 sens=0.814 spec=0.967 F1=0.881 (n=120). Fairness gaps: sex sens 0.69(F)/0.86(M); age worst 60+ AUC=0.85. Single seed — needs ≥3 seeds + 95% CIs. |
 
 ## Conventions
 - Experiment ID: `exNNN`.

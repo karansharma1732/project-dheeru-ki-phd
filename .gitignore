@@ -11,6 +11,10 @@ data/_zips/
 *.nii.gz
 !paper/figures/*.png
 
+# Notebooks with saved outputs (commit clean versions only)
+*-OUTPUT.ipynb
+*-output.ipynb
+
 # Archives / large binaries
 *.zip
 *.tar
