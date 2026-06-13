@@ -43,5 +43,6 @@ eval:
 
 multiseed:
   # run_multiseed.py runs these seeds and reports mean +/- 95% CI.
-  seeds: [0, 1, 2]
-  exp_name: ex001_centralized_3seed
+  # 5 seeds = the project rigor target (tighter CIs on small fairness subgroups).
+  seeds: [0, 1, 2, 3, 4]
+  exp_name: ex001_centralized_5seed
